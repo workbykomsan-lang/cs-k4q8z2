@@ -89,9 +89,13 @@ footer{color:var(--mu);font-size:12px;text-align:center;padding:24px}
 <script type="module">
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 // ---- credits (demo, device-local)
-let credits=Number(localStorage.getItem('cs_credits')??30); const showCr=()=>{$('#cr').textContent=credits;localStorage.setItem('cs_credits',credits)};showCr();
-const spend=n=>{if(credits<n){alert('رصيدك مش كفاية. النسخة التجريبية بتديك ٣٠ نقطة.');return false}credits-=n;showCr();return true};
-const refund=n=>{credits+=n;showCr()};
+const API='https://cs-api-k4q8.workbykomsan.workers.dev';
+let OWNER=false,OK=null;
+try{const m=location.hash.match(/o=([\w-]+)/);if(m){localStorage.setItem('cs_owner',m[1]);history.replaceState(null,'',location.pathname+location.search)}OK=localStorage.getItem('cs_owner')}catch{}
+let credits=Number(localStorage.getItem('cs_credits')??30); const showCr=()=>{$('#cr').textContent=OWNER?'∞':credits;if(!OWNER)localStorage.setItem('cs_credits',credits)};showCr();
+if(OK)fetch(API+'/whoami',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:OK})}).then(r=>r.json()).then(j=>{if(j.owner){OWNER=true;showCr()}else localStorage.removeItem('cs_owner')}).catch(()=>{});
+const spend=n=>{if(OWNER)return true;if(credits<n){alert('رصيدك مش كفاية. النسخة التجريبية بتديك ٣٠ نقطة.');return false}credits-=n;showCr();return true};
+const refund=n=>{if(OWNER)return;credits+=n;showCr()};
 // ---- tabs
 $$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');$$('.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.t))});
 // ---- file pick
@@ -119,9 +123,8 @@ const DIAL={
 eg:'اكتب بالعامية المصرية الطبيعية زي ما التاجر المصري بيكلم زبونه (مثال: "ألحق"، "بس"، "دلوقتي"، "هيبقى"). ممنوع الفصحى الثقيلة.',
 sa:'اكتب باللهجة السعودية (النجدية/الحجازية الخفيفة) زي إعلانات سناب وتويتر (مثال: "وش تنتظر"، "لا يفوتك"، "الحين"، "يجنن"). ممنوع الفصحى الثقيلة.',
 ae:'اكتب باللهجة الإماراتية الخليجية (مثال: "شو تنتظر"، "الحين"، "حلو مرة"، "لا يفوتكم"). ممنوع الفصحى الثقيلة.'};
-const API='https://cs-api-k4q8.workbykomsan.workers.dev';
 async function adsAI(name,feat,price,d){
- const r=await fetch(API+'/ad',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,features:feat,price,dialect:d})});
+ const r=await fetch(API+'/ad',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,features:feat,price,dialect:d,k:OWNER?OK:undefined})});
  if(!r.ok)throw new Error('ai '+r.status);const o=await r.json();if(!o.ads||!o.ads.length)throw new Error('shape');return o;
 }
 async function ads(name,feat,price,d){
