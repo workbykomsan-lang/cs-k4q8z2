@@ -2,72 +2,113 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
+<meta name="theme-color" content="#0a0a12">
+<meta property="og:title" content="كليك ستوديو">
+<meta property="og:description" content="صور منتجات احترافية وإعلانات بالعامية، من موبايلك في دقيقة.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23ffb020'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%231a1200' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='2.5' fill='%231a1200'/%3E%3C/svg%3E">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>كليك ستوديو | صور منتجات وإعلانات بالذكاء الاصطناعي</title>
 <meta name="description" content="ارفع صورة منتجك من الموبايل، واحصل على صورة ستوديو احترافية و٣ إعلانات بالعامية المصرية أو الخليجية.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0e1116;--card:#171b23;--line:#262c38;--tx:#f2f4f8;--mu:#9aa3b2;--ac:#ffb020;--ac2:#7c5cff}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font-family:Cairo,system-ui,sans-serif;line-height:1.7}
-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#0e1116ee;backdrop-filter:blur(8px);z-index:5}
-.logo{font-weight:800;font-size:20px}.logo b{color:var(--ac)}
-.credits{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:4px 14px;font-size:14px}
-.credits b{color:var(--ac)}
-main{max-width:860px;margin:0 auto;padding:18px}
-h1{font-size:26px;margin:10px 0 4px}p.sub{color:var(--mu);margin:0 0 16px}
-.tabs{display:flex;gap:8px;margin:16px 0;flex-wrap:wrap}
-.tab{flex:1;min-width:130px;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--tx);font:inherit;cursor:pointer;text-align:center}
-.tab.on{background:linear-gradient(135deg,var(--ac2),#c04cff);border-color:transparent}
-.tab small{display:block;color:#ffffffaa;font-size:12px}
-.panel{display:none;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+:root{--bg:#0a0a12;--card:#14141f;--line:#262636;--tx:#f4f4fa;--mu:#9b9bb4;--ac:#ffb020;--ac2:#7c5cff;--r:18px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Cairo,system-ui,sans-serif;line-height:1.65;padding-bottom:84px;overflow-x:hidden}
+body:before,body:after{content:"";position:fixed;z-index:-1;border-radius:50%;filter:blur(90px);opacity:.28;pointer-events:none}
+body:before{width:420px;height:420px;background:var(--ac2);top:-140px;right:-120px;animation:fl 14s ease-in-out infinite alternate}
+body:after{width:360px;height:360px;background:var(--ac);bottom:-160px;left:-120px;opacity:.16;animation:fl 18s ease-in-out infinite alternate-reverse}
+@keyframes fl{to{transform:translate(40px,60px) scale(1.15)}}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;position:sticky;top:0;background:#0a0a12cc;backdrop-filter:blur(14px);z-index:5;border-bottom:1px solid #ffffff10}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:21px;letter-spacing:-.3px}
+.logo b{color:var(--ac)}
+.mark{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--ac),#ff6a3d);display:grid;place-items:center;box-shadow:0 6px 18px #ffb02040;transform:rotate(-8deg)}
+.mark i{width:15px;height:15px;border-radius:50%;border:3px solid #1a1200;position:relative}
+.mark i:after{content:"";position:absolute;inset:2px;border-radius:50%;background:#1a1200}
+.hd{display:flex;gap:8px;align-items:center}
+.credits{background:#ffffff0d;border:1px solid #ffffff14;border-radius:99px;padding:3px 13px;font-size:14px;white-space:nowrap}
+.credits b{color:var(--ac);font-size:16px}
+#accBtn{background:var(--tx);border:0;color:#12121a;border-radius:99px;padding:4px 15px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+main{max-width:820px;margin:0 auto;padding:6px 16px 18px}
+.hero{padding:22px 0 8px;animation:up .6s both}
+h1{font-size:clamp(27px,6.4vw,42px);line-height:1.2;margin:0 0 8px;font-weight:800;letter-spacing:-.5px}
+h1 em{font-style:normal;background:linear-gradient(90deg,var(--ac),#ff6a3d 55%,#c04cff);-webkit-background-clip:text;background-clip:text;color:transparent}
+p.sub{color:var(--mu);margin:0 0 12px;font-size:15px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 2px}
+.chips span{font-size:12.5px;padding:3px 11px;border-radius:99px;background:#ffffff0c;border:1px solid #ffffff12;color:#cfcfe4}
+@keyframes up{from{opacity:0;transform:translateY(12px)}}
+.tabs{display:flex;gap:6px;margin:16px 0 14px;padding:5px;border-radius:99px;background:#ffffff0a;border:1px solid #ffffff10}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:8px 6px;border-radius:99px;border:0;background:transparent;color:var(--mu);font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:.25s;text-align:center;line-height:1.25}
+.tab svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:none}
+.tab small{display:none;color:inherit;opacity:.7;font-size:11px;font-weight:400}
+.tab.on{background:linear-gradient(135deg,var(--ac2),#b04cff);color:#fff;box-shadow:0 8px 22px #7c5cff55}
+@media(min-width:700px){.tab small{display:block}}
+@media(max-width:699px){
+ .tabs{position:fixed;bottom:10px;left:10px;right:10px;margin:0;z-index:6;background:#12121ce8;backdrop-filter:blur(16px);box-shadow:0 10px 40px #000a;border-radius:24px;padding:6px}
+ .tab{border-radius:18px;font-size:11.5px;padding:7px 2px}.tab svg{display:block}
+}
+.panel{display:none;animation:up .35s both}
 .panel.on{display:block}
-label{display:block;margin:10px 0 4px;font-size:14px;color:var(--mu)}
-input,textarea,select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0e1116;color:var(--tx);font:inherit}
-textarea{min-height:70px;resize:vertical}
+.card{background:linear-gradient(180deg,#ffffff0a,#ffffff05);border:1px solid #ffffff12;border-radius:var(--r);padding:16px;margin-top:12px}
+label{display:block;margin:12px 0 5px;font-size:13.5px;color:var(--mu);font-weight:600}
+input,textarea,select{width:100%;padding:12px 14px;border-radius:14px;border:1px solid #ffffff14;background:#ffffff0a;color:var(--tx);font:inherit;font-size:16px;transition:.2s}
+input:focus,textarea:focus,select:focus{outline:0;border-color:var(--ac2);background:#ffffff10;box-shadow:0 0 0 4px #7c5cff26}
+select option{background:#14141f}
+textarea{min-height:76px;resize:vertical}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:560px){.row{grid-template-columns:1fr}}
-button.go{margin-top:14px;width:100%;padding:12px;border:0;border-radius:12px;background:var(--ac);color:#1a1200;font:inherit;font-weight:800;font-size:16px;cursor:pointer}
-button.go:disabled{opacity:.5;cursor:wait}
-button.sm{padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:#0e1116;color:var(--tx);font:inherit;font-size:13px;cursor:pointer}
-.ad{background:#0e1116;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;white-space:pre-wrap}
-.ad h4{margin:0 0 6px;color:var(--ac)}
+button.go{margin-top:16px;width:100%;padding:14px;border:0;border-radius:16px;background:linear-gradient(135deg,var(--ac),#ff7a3d);color:#1a0f00;font:inherit;font-weight:800;font-size:16.5px;cursor:pointer;box-shadow:0 10px 26px #ff8a2a40;transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden}
+button.go:active{transform:scale(.98)}
+button.go:disabled{opacity:.7;cursor:wait}
+button.go:disabled:after{content:"";position:absolute;inset:auto 0 0 0;height:4px;background:repeating-linear-gradient(90deg,#1a0f0055 0 20px,transparent 20px 40px);animation:mv 1s linear infinite}
+@keyframes mv{to{background-position:40px 0}}
+button.sm{padding:7px 14px;border-radius:99px;border:1px solid #ffffff1c;background:#ffffff0c;color:var(--tx);font:inherit;font-size:13px;cursor:pointer}
+.ad{border-right:3px solid var(--ac);background:#ffffff08;border-radius:6px 14px 14px 6px;padding:12px 14px;margin-top:12px;white-space:pre-wrap}
+.ad h4{margin:0 0 6px;color:var(--ac);font-size:15px}
 .status{margin-top:10px;color:var(--mu);font-size:14px;min-height:20px}
-canvas{width:100%;max-width:540px;border-radius:12px;display:block;margin:12px auto;background:#222}
-.bgs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.bg{width:46px;height:46px;border-radius:10px;border:2px solid transparent;cursor:pointer}
-.bg.on{border-color:var(--ac)}
-.drop{border:2px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--mu);cursor:pointer}
-#accBtn{background:var(--card);border:1px solid var(--line);color:var(--tx);border-radius:99px;padding:4px 14px;font:inherit;font-size:14px;cursor:pointer}
-.hd{display:flex;gap:8px;align-items:center}
-.modal{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:20;padding:16px}
+canvas{width:100%;max-width:540px;border-radius:16px;display:block;margin:14px auto;background:#222;box-shadow:0 18px 50px #0009}
+.bgs{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.bg{width:44px;height:44px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:.2s;box-shadow:0 0 0 1px #ffffff22}
+.bg.on{border-color:var(--ac);transform:scale(1.12)}
+.drop{border:2px dashed #ffffff26;border-radius:var(--r);padding:20px 14px;text-align:center;color:var(--mu);cursor:pointer;background:#ffffff06;transition:.25s;display:flex;flex-direction:column;align-items:center;gap:6px}
+.drop:hover{border-color:var(--ac);background:#ffb02010}
+.drop svg{width:34px;height:34px;fill:none;stroke:var(--ac);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.drop img{width:104px;height:104px;object-fit:cover;border-radius:16px;box-shadow:0 8px 24px #0008}
+.drop span{font-size:14px}
+#grid>div{animation:up .5s both}
+#grid img{box-shadow:0 12px 30px #0008}
+h3.sec{margin:20px 0 4px;font-size:18px}
+footer{color:var(--mu);font-size:12px;text-align:center;padding:18px 16px 10px}
+#accBtn,.credits{flex:none}
+.modal{position:fixed;inset:0;background:#000b;backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:20;padding:16px}
 .modal[hidden]{display:none}
-.mbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;width:100%;max-width:380px}
-.mbox h3{margin:0 0 8px}.mbox .x{float:left;background:none;border:0;color:var(--mu);font-size:22px;cursor:pointer}
-.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:10px}
-.plan{border:1px solid var(--line);border-radius:14px;padding:14px;background:#0e1116}
-.plan.cur{border-color:var(--ac)}
-.plan h4{margin:0}.plan .pts{font-size:28px;font-weight:800;color:var(--ac)}
-.plan ul{padding:0 18px 0 0;margin:8px 0;color:var(--mu);font-size:13px}
-.plan button{width:100%;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--mu);font:inherit}
-footer{color:var(--mu);font-size:12px;text-align:center;padding:24px}
+.mbox{background:#15151f;border:1px solid #ffffff1a;border-radius:24px;padding:20px;width:100%;max-width:380px;animation:up .3s both}
+.mbox h3{margin:0 0 8px}.mbox .x{float:left;background:none;border:0;color:var(--mu);font-size:26px;cursor:pointer;line-height:1}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:12px}
+.plan{border:1px solid #ffffff14;border-radius:20px;padding:14px;background:#ffffff06}
+.plan.cur{border-color:var(--ac);background:#ffb0200d}
+.plan h4{margin:0}.plan .pts{font-size:30px;font-weight:800;color:var(--ac);line-height:1.2}
+.plan ul{padding:0 16px 0 0;margin:8px 0;color:var(--mu);font-size:13px}
+.plan button{width:100%;padding:8px;border-radius:99px;border:1px solid #ffffff1c;background:transparent;color:var(--mu);font:inherit}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<header><div class="logo">كليك <b>ستوديو</b></div><div class="hd"><div class="credits">رصيدك: <b id="cr">0</b> نقطة</div><button id="accBtn">دخول</button></div></header>
+<header><div class="logo"><span class="mark"><i></i></span><span>كليك <b>ستوديو</b></span></div><div class="hd"><div class="credits">رصيدك: <b id="cr">0</b> نقطة</div><button id="accBtn">دخول</button></div></header>
 <main>
-<h1>صوّر منتجك وانزل إعلانك في كليك</h1>
-<p class="sub">ارفع صورة من الموبايل واحنا نشيل الخلفية ونحطها في ستوديو، ونكتبلك الإعلانات بلهجة جمهورك. نسخة تجريبية مجانية.</p>
+<div class="hero"><h1>صوّر منتجك. <em>انزل إعلانك</em> في كليك.</h1>
+<p class="sub">ارفع صورة من الموبايل، ونطلعلك صورة ستوديو وإعلانات بلهجة جمهورك.</p>
+<div class="chips"><span>عامية مصرية وخليجي</span><span>٦ صور بالذكاء</span><span>مجاني للتجربة</span></div></div>
 <div class="tabs">
-<button class="tab on" data-t="p1">كليك واحد<small>صورة + ٣ إعلانات + سكريبت · ٦ نقاط</small></button>
-<button class="tab" data-t="p2">استوديو الصور<small>٥ نقاط للصورة</small></button>
-<button class="tab" data-t="p3">مولد الإعلانات<small>١ نقطة للحملة</small></button>
-<button class="tab" data-t="p4">الباقات<small>رصيدك وخطط الاشتراك</small></button>
+<button class="tab on" data-t="p1"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg><span>كليك واحد</span><small>صورة + ٣ إعلانات + سكريبت · ٦ نقاط</small></button>
+<button class="tab" data-t="p2"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg><span>استوديو الصور</span><small>٥ نقاط للصورة</small></button>
+<button class="tab" data-t="p3"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span>مولد الإعلانات</span><small>١ نقطة للحملة</small></button>
+<button class="tab" data-t="p4"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4"/></svg><span>الباقات</span><small>رصيدك وخطط الاشتراك</small></button>
 </div>
 
-<section class="panel on" id="p1">
-<div class="drop" id="drop1">اضغط لاختيار صورة المنتج</div>
+<section class="panel on" id="p1"><div class="card">
+<div class="drop" id="drop1"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L8 8m4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg><span>اضغط لاختيار صورة المنتج أو صوّرها بالكاميرا</span></div>
 <label>اسم المنتج</label><input id="n1" placeholder="مثال: شنطة جلد طبيعي">
 <label>المميزات</label><textarea id="f1" placeholder="جلد طبيعي، مقاومة للمية، ٣ ألوان"></textarea>
 <div class="row"><div><label>السعر</label><input id="pr1" placeholder="٤٥٠ جنيه"></div>
@@ -75,17 +116,16 @@ footer{color:var(--mu);font-size:12px;text-align:center;padding:24px}
 <button class="go" id="go1">جهّز لي كل حاجة (٦ نقاط)</button>
 <div class="status" id="s1"></div>
 <div id="o1"></div>
-</section>
+</div></section>
 
-<section class="panel" id="p2">
-<div class="drop" id="drop2">اضغط لاختيار صورة المنتج</div>
+<section class="panel" id="p2"><div class="card">
+<div class="drop" id="drop2"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L8 8m4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg><span>اضغط لاختيار صورة المنتج أو صوّرها بالكاميرا</span></div>
 <label>الخلفية</label><div class="bgs" id="bgs"></div>
 <button class="go" id="go2">اعمل صورة الستوديو (٥ نقاط)</button>
 <div class="status" id="s2"></div>
 <canvas id="cv" width="1080" height="1080" hidden></canvas>
 <div id="dl2"></div>
-<hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
-<label>مجموعة صور بالذكاء (٦ صور بخلفيات مولّدة + كلمات على الصورة)</label>
+<h3 class="sec">مجموعة ٦ صور بالذكاء</h3><p class="sub" style="margin:0">خلفيات مولّدة بالذكاء، ومنتجك زي ما هو، مع اسمك وسعرك على الصورة.</p>
 <input id="vn" placeholder="اسم المنتج (يظهر على الصورة)" maxlength="40">
 <input id="vh" placeholder="جملة قصيرة (مثال: خصم لفترة محدودة)" maxlength="50" style="margin-top:8px">
 <input id="vp" placeholder="السعر (مثال: ٤٥٠ جنيه)" maxlength="20" style="margin-top:8px">
@@ -93,9 +133,9 @@ footer{color:var(--mu);font-size:12px;text-align:center;padding:24px}
 <div class="status" id="sSet"></div>
 <div id="grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px"></div>
 <div id="dlAll"></div>
-</section>
+</div></section>
 
-<section class="panel" id="p3">
+<section class="panel" id="p3"><div class="card">
 <label>اسم المنتج</label><input id="n3">
 <label>المميزات</label><textarea id="f3"></textarea>
 <div class="row"><div><label>السعر</label><input id="pr3"></div>
@@ -103,14 +143,14 @@ footer{color:var(--mu);font-size:12px;text-align:center;padding:24px}
 <button class="go" id="go3">اكتب الإعلانات (١ نقطة)</button>
 <div class="status" id="s3"></div>
 <div id="o3"></div>
-</section>
-<section class="panel" id="p4">
+</div></section>
+<section class="panel" id="p4"><div class="card">
 <h3 style="margin:0">رصيدك وباقات الاشتراك</h3>
 <p class="sub" id="planNow"></p>
 <div class="plans" id="plans"></div>
 <p class="sub" style="margin-top:14px">تكلفة الخدمات: كليك واحد ٦ نقاط · صورة ستوديو ٥ نقاط · مجموعة ٦ صور بالذكاء ٦ نقاط · حملة إعلانات نقطة واحدة.</p>
 <p class="sub">الدفع والاشتراك المدفوع لسه مش متاحين. الأسعار هتتحدد قبل الإطلاق، وحاليًا الباقة المجانية بس شغالة.</p>
-</section>
+</div></section>
 </main>
 <div class="modal" id="acc" hidden><div class="mbox">
 <button class="x" id="accX">×</button>
@@ -177,7 +217,7 @@ $$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('o
 let img=null,pickTarget=null;
 const file=$('#file');
 ['drop1','drop2'].forEach(id=>$('#'+id).onclick=()=>{pickTarget=id;file.click()});
-file.onchange=()=>{const f=file.files[0];if(!f)return;img=f;cutCache=null;cutKey='';norm=null;['drop1','drop2'].forEach(id=>$('#'+id).textContent='تم اختيار: '+f.name+' (اضغط للتغيير)')};
+file.onchange=()=>{const f=file.files[0];if(!f)return;img=f;cutCache=null;cutKey='';norm=null;{const u=URL.createObjectURL(f);['drop1','drop2'].forEach(id=>{const d=$('#'+id);d.innerHTML='<img alt=""><span></span>';const im=d.querySelector('img');im.onerror=()=>im.remove();im.src=u;d.querySelector('span').textContent=f.name+' · اضغط للتغيير'});}};
 // ---- normalize any phone photo (HEIC/HEIF/JPEG/PNG/WebP) to a PNG blob
 let norm=null;
 async function toBlobFromBitmap(bm){const M=2000,k=Math.min(1,M/Math.max(bm.width,bm.height));const c=document.createElement('canvas');c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);c.getContext('2d').drawImage(bm,0,0,c.width,c.height);return await new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(new Error('toBlob')),'image/png'))}
