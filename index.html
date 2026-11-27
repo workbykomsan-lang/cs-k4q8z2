@@ -98,7 +98,22 @@ $$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('o
 let img=null,pickTarget=null;
 const file=$('#file');
 ['drop1','drop2'].forEach(id=>$('#'+id).onclick=()=>{pickTarget=id;file.click()});
-file.onchange=()=>{const f=file.files[0];if(!f)return;img=f;['drop1','drop2'].forEach(id=>$('#'+id).textContent='تم اختيار: '+f.name+' (اضغط للتغيير)')};
+file.onchange=()=>{const f=file.files[0];if(!f)return;img=f;cutCache=null;cutKey='';norm=null;['drop1','drop2'].forEach(id=>$('#'+id).textContent='تم اختيار: '+f.name+' (اضغط للتغيير)')};
+// ---- normalize any phone photo (HEIC/HEIF/JPEG/PNG/WebP) to a PNG blob
+let norm=null;
+async function toBlobFromBitmap(bm){const M=2000,k=Math.min(1,M/Math.max(bm.width,bm.height));const c=document.createElement('canvas');c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);c.getContext('2d').drawImage(bm,0,0,c.width,c.height);return await new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(new Error('toBlob')),'image/png'))}
+async function normalize(f,st){
+ if(norm&&norm.src===f)return norm.blob;
+ let blob=null;
+ try{blob=await toBlobFromBitmap(await createImageBitmap(f))}catch(e){}
+ if(!blob){try{const u=URL.createObjectURL(f);const im=new Image();im.src=u;await im.decode();blob=await toBlobFromBitmap(im)}catch(e){}}
+ if(!blob){
+  const isH=/hei[cf]/i.test(f.type+f.name)||!f.type;
+  if(isH){try{st('بنحوّل صورة HEIC...');const m=await import('https://cdn.jsdelivr.net/npm/heic2any@0.0.4/+esm');const h=m.default||m;let out=await h({blob:f,toType:'image/jpeg',quality:0.92});if(Array.isArray(out))out=out[0];blob=await toBlobFromBitmap(await createImageBitmap(out))}catch(e){}}
+ }
+ if(!blob)throw new Error('مش قادرين نقرا الصورة دي. جرّب تصوّرها JPG أو PNG، أو خد لقطة شاشة للصورة وارفعها.');
+ norm={src:f,blob};return blob}
+const errMsg=e=>{const m=(e&&e.message)||'';if(/[\u0600-\u06FF]/.test(m))return m;if(/network|fetch|Failed/i.test(m))return 'مشكلة في الاتصال بالإنترنت. جرّب تاني.';return 'حصل خطأ غير متوقع. جرّب تاني أو بصورة تانية.'};
 // ---- dialect prompt
 const DIAL={
 eg:'اكتب بالعامية المصرية الطبيعية زي ما التاجر المصري بيكلم زبونه (مثال: "ألحق"، "بس"، "دلوقتي"، "هيبقى"). ممنوع الفصحى الثقيلة.',
@@ -127,7 +142,7 @@ async function cutout(f,st){
  const key=f.name+f.size;if(cutKey===key&&cutCache)return cutCache;
  st('بنحمّل نموذج إزالة الخلفية أول مرة (حوالي ٤٠ ميجا)، استنى شوية...');
  const m=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm');
- const blob=await m.removeBackground(f,{progress:(k,c,t)=>{if(t)st('تحميل/معالجة: '+Math.round(c/t*100)+'%')}});
+ const blob=await m.removeBackground(await normalize(f,st),{progress:(k,c,t)=>{if(t)st('تحميل/معالجة: '+Math.round(c/t*100)+'%')}});
  cutKey=key;cutCache=await createImageBitmap(blob);return cutCache;
 }
 function studio(bm,idx,cv){
@@ -152,12 +167,12 @@ async function runPhoto(st){const bm=await cutout(img,st);studio(bm,bgSel,$('#cv
 $('#go2').onclick=async()=>{
  if(!img)return $('#s2').textContent='اختار صورة الأول';
  if(!spend(5))return;$('#go2').disabled=true;
- try{await runPhoto(t=>$('#s2').textContent=t);$('#s2').textContent='جاهزة.'}catch(e){refund(5);$('#s2').textContent='حصل خطأ: '+e.message+' (اتردت النقاط)'}
+ try{await runPhoto(t=>$('#s2').textContent=t);$('#s2').textContent='جاهزة.'}catch(e){refund(5);$('#s2').textContent='حصل خطأ: '+errMsg(e)+' (اتردت النقاط)'}
  $('#go2').disabled=false};
 $('#go3').onclick=async()=>{
  const n=$('#n3').value.trim();if(!n)return $('#s3').textContent='اكتب اسم المنتج';
  if(!spend(1))return;$('#go3').disabled=true;$('#s3').textContent='بنكتب...';
- try{render(await ads(n,$('#f3').value,$('#pr3').value,$('#p3 .dial').value),$('#o3'));$('#s3').textContent='جاهز.'}catch(e){refund(1);$('#s3').textContent='حصل خطأ: '+e.message+' (اتردت النقطة)'}
+ try{render(await ads(n,$('#f3').value,$('#pr3').value,$('#p3 .dial').value),$('#o3'));$('#s3').textContent='جاهز.'}catch(e){refund(1);$('#s3').textContent='حصل خطأ: '+errMsg(e)+' (اتردت النقطة)'}
  $('#go3').disabled=false};
 $('#go1').onclick=async()=>{
  const n=$('#n1').value.trim();if(!img)return $('#s1').textContent='اختار صورة الأول';if(!n)return $('#s1').textContent='اكتب اسم المنتج';
@@ -165,7 +180,7 @@ $('#go1').onclick=async()=>{
  try{
   const [o,bm]=await Promise.all([ads(n,$('#f1').value,$('#pr1').value,$('#p1 .dial').value),cutout(img,t=>$('#s1').textContent=t)]);
   studio(bm,bgSel,$('#cv1'));dlLink($('#cv1'),$('#dl1'));render(o,$('#ad1'));$('#s1').textContent='جاهز.';
- }catch(e){refund(6);$('#s1').textContent='حصل خطأ: '+e.message+' (اتردت النقاط)'}
+ }catch(e){refund(6);$('#s1').textContent='حصل خطأ: '+errMsg(e)+' (اتردت النقاط)'}
  $('#go1').disabled=false};
 </script>
 </body></html>
