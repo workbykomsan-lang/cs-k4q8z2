@@ -156,11 +156,15 @@ footer{color:var(--mu);font-size:12px;text-align:center;padding:18px 16px 10px}
 <div class="modal" id="acc" hidden><div class="mbox">
 <button class="x" id="accX">×</button>
 <h3 id="accT">تسجيل الدخول</h3>
-<div id="accOut" hidden><p id="accMail" class="sub"></p><p class="sub" id="accCr"></p><button class="go" id="logout" style="background:#262c38;color:var(--tx)">تسجيل خروج</button></div>
+<div id="accOut" hidden><p id="accMail" class="sub"></p><p class="sub" id="accCr"></p><div id="rcBox" hidden><p class="sub" style="margin:0 0 6px">كود الاسترجاع بتاعك. احفظه في مكان آمن (سكرين أو ملاحظة)، بيظهر مرة واحدة وبيتغير كل ما تستخدمه. هتحتاجه لو نسيت كلمة السر.</p><div id="rcCode" dir="ltr" style="font:700 22px/1.4 monospace;letter-spacing:2px;text-align:center;padding:10px;border-radius:12px;background:#ffffff0d;color:var(--ac);user-select:all"></div><button class="sm" id="rcCopy" style="margin-top:8px;width:100%">نسخ الكود</button></div>
+<button class="sm" id="newrc" style="width:100%;margin-top:10px">إنشاء كود استرجاع جديد</button>
+<button class="go" id="logout" style="background:#262c38;color:var(--tx)">تسجيل خروج</button></div>
 <form id="accIn">
 <label>البريد الإلكتروني</label><input id="ae" type="email" autocomplete="email" required>
 <label>كلمة السر (٦ أحرف على الأقل)</label><input id="ap" type="password" autocomplete="current-password" minlength="6" required>
+<div id="arcW" hidden><label>كود الاسترجاع</label><input id="arc" dir="ltr" autocomplete="off" placeholder="XXXX-XXXX-XXXX-XXXX"></div>
 <button class="go" id="aok" type="submit">دخول</button>
+<button class="sm" type="button" id="aforgot" style="margin-top:8px;width:100%">نسيت كلمة السر؟</button>
 <button class="sm" type="button" id="aswitch" style="margin-top:10px;width:100%">معندكش حساب؟ سجّل حساب جديد (٣٠ نقطة هدية)</button>
 <div class="status" id="aerr"></div>
 </form></div></div>
@@ -202,15 +206,20 @@ async function refund(n,srv=0){
  credits+=n;showCr()}
 // ---- account modal
 let mode='in';const acc=$('#acc');
-const setMode=m=>{mode=m;$('#accT').textContent=m==='in'?'تسجيل الدخول':'حساب جديد';$('#aok').textContent=m==='in'?'دخول':'إنشاء الحساب';$('#aswitch').textContent=m==='in'?'معندكش حساب؟ سجّل حساب جديد (٣٠ نقطة هدية)':'عندك حساب؟ سجّل دخول';$('#ap').autocomplete=m==='in'?'current-password':'new-password';$('#aerr').textContent=''};
-$('#accBtn').onclick=()=>{const l=!!(ME||OWNER);$('#accIn').hidden=l;$('#accOut').hidden=!l;if(l){$('#accT').textContent='حسابي';$('#accMail').textContent=OWNER?'حساب المالك (رصيد غير محدود)':ME.email;$('#accCr').textContent=OWNER?'':'الرصيد: '+ME.credits+' نقطة';$('#logout').hidden=!ME}else setMode('in');acc.hidden=false};
+const setMode=m=>{mode=m;$('#accT').textContent=m==='in'?'تسجيل الدخول':m==='up'?'حساب جديد':'استرجاع الحساب';$('#aok').textContent=m==='in'?'دخول':m==='up'?'إنشاء الحساب':'تغيير كلمة السر';$('#aswitch').textContent=m==='in'?'معندكش حساب؟ سجّل حساب جديد (٣٠ نقطة هدية)':'عندك حساب؟ سجّل دخول';$('#aforgot').hidden=m!=='in';$('#arcW').hidden=m!=='rs';$('#ap').autocomplete=m==='in'?'current-password':'new-password';$('#ap').previousElementSibling.textContent=m==='rs'?'كلمة السر الجديدة (٦ أحرف على الأقل)':'كلمة السر (٦ أحرف على الأقل)';$('#aerr').textContent=''};
+const fmtRc=c=>String(c||'').replace(/(.{4})(?=.)/g,'$1-');
+function openAcc(rc){const l=!!(ME||OWNER);$('#accIn').hidden=l;$('#accOut').hidden=!l;$('#rcBox').hidden=!rc;if(rc)$('#rcCode').textContent=fmtRc(rc);if(l){$('#accT').textContent='حسابي';$('#accMail').textContent=OWNER?'حساب المالك (رصيد غير محدود)':ME.email;$('#accCr').textContent=OWNER?'':'الرصيد: '+ME.credits+' نقطة';$('#logout').hidden=!ME;$('#newrc').hidden=!ME}else setMode('in');acc.hidden=false}
+$('#accBtn').onclick=()=>openAcc();
+$('#aforgot').onclick=()=>setMode('rs');
+$('#rcCopy').onclick=async()=>{try{await navigator.clipboard.writeText($('#rcCode').textContent);$('#rcCopy').textContent='تم النسخ'}catch{$('#rcCopy').textContent='انسخه يدوي'}};
+$('#newrc').onclick=async()=>{try{const r=await post('/newcode',{t:TOK});const j=await r.json();if(!r.ok)throw 0;openAcc(j.rc)}catch{alert('مشكلة في الاتصال. جرّب تاني.')}};
 $('#accX').onclick=()=>acc.hidden=true;acc.onclick=e=>{if(e.target===acc)acc.hidden=true};
 $('#aswitch').onclick=()=>setMode(mode==='in'?'up':'in');
 $('#logout').onclick=()=>{logout();acc.hidden=true};
 $('#accIn').onsubmit=async e=>{e.preventDefault();const b=$('#aok');b.disabled=true;$('#aerr').textContent='لحظة...';
- try{const r=await post(mode==='in'?'/login':'/signup',{e:$('#ae').value.trim(),p:$('#ap').value});const j=await r.json();
-  if(!r.ok){$('#aerr').textContent=({creds:'البريد أو كلمة السر غلط.',exists:'البريد ده متسجل قبل كده. جرّب تسجيل الدخول.',limit:'محاولات كتير. جرّب بعدين.',bad:'اكتب بريد صحيح وكلمة سر ٦ أحرف على الأقل.'})[j.error]||'حصل خطأ. جرّب تاني.';return}
-  TOK=j.token;ME={email:j.email,credits:j.credits,plan:j.plan};try{localStorage.setItem('cs_tok',TOK)}catch{}$('#ap').value='';showCr();acc.hidden=true;
+ try{const r=await post(mode==='in'?'/login':mode==='up'?'/signup':'/reset',{e:$('#ae').value.trim(),p:$('#ap').value,rc:mode==='rs'?$('#arc').value:undefined});const j=await r.json();
+  if(!r.ok){$('#aerr').textContent=({creds:mode==='rs'?'البريد أو كود الاسترجاع غلط.':'البريد أو كلمة السر غلط.',exists:'البريد ده متسجل قبل كده. جرّب تسجيل الدخول.',limit:'محاولات كتير. جرّب بعدين.',bad:'اكتب بريد صحيح وكلمة سر ٦ أحرف على الأقل.'})[j.error]||'حصل خطأ. جرّب تاني.';return}
+  TOK=j.token;ME={email:j.email,credits:j.credits,plan:j.plan};try{localStorage.setItem('cs_tok',TOK)}catch{}$('#ap').value='';$('#arc').value='';showCr();openAcc(j.rc);
  }catch{$('#aerr').textContent='مشكلة في الاتصال. جرّب تاني.'}finally{b.disabled=false}};
 // ---- tabs
 $$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');$$('.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.t))});
