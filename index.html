@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>كليك ستوديو | صور منتجات وإعلانات بالذكاء الاصطناعي</title>
+<meta name="description" content="ارفع صورة منتجك من الموبايل، واحصل على صورة ستوديو احترافية و٣ إعلانات بالعامية المصرية أو الخليجية.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e1116;--card:#171b23;--line:#262c38;--tx:#f2f4f8;--mu:#9aa3b2;--ac:#ffb020;--ac2:#7c5cff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Cairo,system-ui,sans-serif;line-height:1.7}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#0e1116ee;backdrop-filter:blur(8px);z-index:5}
+.logo{font-weight:800;font-size:20px}.logo b{color:var(--ac)}
+.credits{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:4px 14px;font-size:14px}
+.credits b{color:var(--ac)}
+main{max-width:860px;margin:0 auto;padding:18px}
+h1{font-size:26px;margin:10px 0 4px}p.sub{color:var(--mu);margin:0 0 16px}
+.tabs{display:flex;gap:8px;margin:16px 0;flex-wrap:wrap}
+.tab{flex:1;min-width:130px;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--tx);font:inherit;cursor:pointer;text-align:center}
+.tab.on{background:linear-gradient(135deg,var(--ac2),#c04cff);border-color:transparent}
+.tab small{display:block;color:#ffffffaa;font-size:12px}
+.panel{display:none;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.panel.on{display:block}
+label{display:block;margin:10px 0 4px;font-size:14px;color:var(--mu)}
+input,textarea,select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0e1116;color:var(--tx);font:inherit}
+textarea{min-height:70px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+button.go{margin-top:14px;width:100%;padding:12px;border:0;border-radius:12px;background:var(--ac);color:#1a1200;font:inherit;font-weight:800;font-size:16px;cursor:pointer}
+button.go:disabled{opacity:.5;cursor:wait}
+button.sm{padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:#0e1116;color:var(--tx);font:inherit;font-size:13px;cursor:pointer}
+.ad{background:#0e1116;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;white-space:pre-wrap}
+.ad h4{margin:0 0 6px;color:var(--ac)}
+.status{margin-top:10px;color:var(--mu);font-size:14px;min-height:20px}
+canvas{width:100%;max-width:540px;border-radius:12px;display:block;margin:12px auto;background:#222}
+.bgs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.bg{width:46px;height:46px;border-radius:10px;border:2px solid transparent;cursor:pointer}
+.bg.on{border-color:var(--ac)}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--mu);cursor:pointer}
+footer{color:var(--mu);font-size:12px;text-align:center;padding:24px}
+</style>
+</head>
+<body>
+<header><div class="logo">كليك <b>ستوديو</b></div><div class="credits">رصيدك: <b id="cr">0</b> نقطة</div></header>
+<main>
+<h1>صوّر منتجك وانزل إعلانك في كليك</h1>
+<p class="sub">ارفع صورة من الموبايل واحنا نشيل الخلفية ونحطها في ستوديو، ونكتبلك الإعلانات بلهجة جمهورك. نسخة تجريبية مجانية.</p>
+<div class="tabs">
+<button class="tab on" data-t="p1">كليك واحد<small>صورة + ٣ إعلانات + سكريبت · ٦ نقاط</small></button>
+<button class="tab" data-t="p2">استوديو الصور<small>٥ نقاط للصورة</small></button>
+<button class="tab" data-t="p3">مولد الإعلانات<small>١ نقطة للحملة</small></button>
+</div>
+
+<section class="panel on" id="p1">
+<div class="drop" id="drop1">اضغط لاختيار صورة المنتج</div>
+<label>اسم المنتج</label><input id="n1" placeholder="مثال: شنطة جلد طبيعي">
+<label>المميزات</label><textarea id="f1" placeholder="جلد طبيعي، مقاومة للمية، ٣ ألوان"></textarea>
+<div class="row"><div><label>السعر</label><input id="pr1" placeholder="٤٥٠ جنيه"></div>
+<div><label>اللهجة</label><select class="dial"><option value="eg">مصري</option><option value="sa">خليجي (سعودي)</option><option value="ae">خليجي (إماراتي)</option></select></div></div>
+<button class="go" id="go1">جهّز لي كل حاجة (٦ نقاط)</button>
+<div class="status" id="s1"></div>
+<div id="o1"></div>
+</section>
+
+<section class="panel" id="p2">
+<div class="drop" id="drop2">اضغط لاختيار صورة المنتج</div>
+<label>الخلفية</label><div class="bgs" id="bgs"></div>
+<button class="go" id="go2">اعمل صورة الستوديو (٥ نقاط)</button>
+<div class="status" id="s2"></div>
+<canvas id="cv" width="1080" height="1080" hidden></canvas>
+<div id="dl2"></div>
+</section>
+
+<section class="panel" id="p3">
+<label>اسم المنتج</label><input id="n3">
+<label>المميزات</label><textarea id="f3"></textarea>
+<div class="row"><div><label>السعر</label><input id="pr3"></div>
+<div><label>اللهجة</label><select class="dial"><option value="eg">مصري</option><option value="sa">خليجي (سعودي)</option><option value="ae">خليجي (إماراتي)</option></select></div></div>
+<button class="go" id="go3">اكتب الإعلانات (١ نقطة)</button>
+<div class="status" id="s3"></div>
+<div id="o3"></div>
+</section>
+</main>
+<footer>نسخة تجريبية. الرصيد المعروض تجريبي ومحفوظ على جهازك فقط، ولا يوجد دفع.</footer>
+<input type="file" id="file" accept="image/*" hidden>
+
+<script type="module">
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+// ---- credits (demo, device-local)
+let credits=Number(localStorage.getItem('cs_credits')??30); const showCr=()=>{$('#cr').textContent=credits;localStorage.setItem('cs_credits',credits)};showCr();
+const spend=n=>{if(credits<n){alert('رصيدك مش كفاية. النسخة التجريبية بتديك ٣٠ نقطة.');return false}credits-=n;showCr();return true};
+const refund=n=>{credits+=n;showCr()};
+// ---- tabs
+$$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');$$('.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.t))});
+// ---- file pick
+let img=null,pickTarget=null;
+const file=$('#file');
+['drop1','drop2'].forEach(id=>$('#'+id).onclick=()=>{pickTarget=id;file.click()});
+file.onchange=()=>{const f=file.files[0];if(!f)return;img=f;['drop1','drop2'].forEach(id=>$('#'+id).textContent='تم اختيار: '+f.name+' (اضغط للتغيير)')};
+// ---- dialect prompt
+const DIAL={
+eg:'اكتب بالعامية المصرية الطبيعية زي ما التاجر المصري بيكلم زبونه (مثال: "ألحق"، "بس"، "دلوقتي"، "هيبقى"). ممنوع الفصحى الثقيلة.',
+sa:'اكتب باللهجة السعودية (النجدية/الحجازية الخفيفة) زي إعلانات سناب وتويتر (مثال: "وش تنتظر"، "لا يفوتك"، "الحين"، "يجنن"). ممنوع الفصحى الثقيلة.',
+ae:'اكتب باللهجة الإماراتية الخليجية (مثال: "شو تنتظر"، "الحين"، "حلو مرة"، "لا يفوتكم"). ممنوع الفصحى الثقيلة.'};
+async function ads(name,feat,price,d){
+ const sys='أنت كاتب إعلانات محترف لمتاجر السوشيال ميديا العربية. '+DIAL[d]+' ارجع JSON فقط بدون أي شرح وبدون علامات كود، بالشكل: {"description":"وصف جذاب للمتجر في ٢-٣ جمل","ads":[{"angle":"زاوية الإعلان","text":"نص إعلان فيسبوك/إنستجرام مع إيموجي وCTA"},{...},{...}],"reel":"سكريبت ريل قصير ١٥-٢٠ ثانية مقسم لمشاهد، كل مشهد في سطر"}. الإعلانات الثلاثة بزوايا مختلفة: عرض/سعر، جودة/مميزات، إلحاح/ندرة. لا تخترع خصومات أو أرقام غير موجودة في بيانات المنتج.';
+ const usr='المنتج: '+name+'\nالمميزات: '+(feat||'-')+'\nالسعر: '+(price||'غير محدد');
+ const r=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:[{role:'system',content:sys},{role:'user',content:usr}],response_format:{type:'json_object'}})});
+ if(!r.ok)throw new Error('خدمة الكتابة مش متاحة دلوقتي');
+ const j=await r.json();let t=j.choices[0].message.content.trim().replace(/^```json|```$/g,'');
+ const o=JSON.parse(t.slice(t.indexOf('{'),t.lastIndexOf('}')+1));
+ if(!o.ads||!o.ads.length)throw new Error('رد غير مفهوم');return o;
+}
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function render(o,el){
+ el.innerHTML='<div class="ad"><h4>وصف المتجر</h4>'+esc(o.description||'')+'</div>'+o.ads.map((a,i)=>'<div class="ad"><h4>إعلان '+(i+1)+(a.angle?' · '+esc(a.angle):'')+'</h4>'+esc(a.text)+'<br><button class="sm" data-c="'+i+'">نسخ</button></div>').join('')+(o.reel?'<div class="ad"><h4>سكريبت الريل</h4>'+esc(Array.isArray(o.reel)?o.reel.join('\n'):o.reel)+'</div>':'');
+ el.querySelectorAll('[data-c]').forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(o.ads[b.dataset.c].text);b.textContent='تم'}catch{b.textContent='انسخ يدوي'}});
+}
+// ---- background removal + studio
+const BG=[['أبيض ستوديو',['#ffffff','#e9edf2']],['رمادي ناعم',['#d8dde4','#aab2bd']],['دافئ',['#fff1de','#f3c48b']],['أزرق هادئ',['#e3efff','#9bbcf0']],['داكن فخم',['#3a3f4b','#0f1218']],['وردي',['#ffe4ee','#f4a6c0']]];
+let bgSel=0;$('#bgs').innerHTML=BG.map((b,i)=>'<div class="bg'+(i?'':' on')+'" data-i="'+i+'" title="'+b[0]+'" style="background:linear-gradient(160deg,'+b[1][0]+','+b[1][1]+')"></div>').join('');
+$$('.bg').forEach(e=>e.onclick=()=>{$$('.bg').forEach(x=>x.classList.remove('on'));e.classList.add('on');bgSel=+e.dataset.i});
+let cutCache=null,cutKey='';
+async function cutout(f,st){
+ const key=f.name+f.size;if(cutKey===key&&cutCache)return cutCache;
+ st('بنحمّل نموذج إزالة الخلفية أول مرة (حوالي ٤٠ ميجا)، استنى شوية...');
+ const m=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm');
+ const blob=await m.removeBackground(f,{progress:(k,c,t)=>{if(t)st('تحميل/معالجة: '+Math.round(c/t*100)+'%')}});
+ cutKey=key;cutCache=await createImageBitmap(blob);return cutCache;
+}
+function studio(bm,idx,cv){
+ const S=1080,c=cv.getContext('2d');cv.width=cv.height=S;const [a,b]=BG[idx][1];
+ const g=c.createRadialGradient(S*.5,S*.35,60,S*.5,S*.5,S*.8);g.addColorStop(0,a);g.addColorStop(1,b);c.fillStyle=g;c.fillRect(0,0,S,S);
+ // floor glow
+ const fl=c.createLinearGradient(0,S*.72,0,S);fl.addColorStop(0,'rgba(255,255,255,0)');fl.addColorStop(1,'rgba(0,0,0,.18)');c.fillStyle=fl;c.fillRect(0,S*.72,S,S*.28);
+ const sc=Math.min(S*.78/bm.width,S*.7/bm.height),w=bm.width*sc,h=bm.height*sc,x=(S-w)/2,y=S*.82-h;
+ // contact shadow
+ c.save();c.fillStyle='rgba(0,0,0,.28)';c.filter='blur(18px)';c.beginPath();c.ellipse(S/2,S*.82+4,w*.42,h*.05+8,0,0,7);c.fill();c.restore();
+ // product layer with relight (soft top-left light, gentle contrast)
+ const L=document.createElement('canvas');L.width=Math.ceil(w);L.height=Math.ceil(h);const l=L.getContext('2d');
+ l.filter='contrast(1.06) saturate(1.05) brightness(1.03)';l.drawImage(bm,0,0,w,h);l.filter='none';
+ l.globalCompositeOperation='source-atop';
+ const hi=l.createLinearGradient(0,0,w,h);hi.addColorStop(0,'rgba(255,255,255,.22)');hi.addColorStop(.5,'rgba(255,255,255,0)');hi.addColorStop(1,'rgba(0,0,0,.18)');
+ l.fillStyle=hi;l.fillRect(0,0,w,h);
+ c.drawImage(L,x,y);
+}
+function dlLink(cv,el){cv.toBlob(bl=>{const u=URL.createObjectURL(bl);el.innerHTML='<a class="sm" style="display:inline-block;margin-top:6px;text-decoration:none;padding:8px 14px;border:1px solid var(--line);border-radius:8px;color:var(--tx)" download="studio.png" href="'+u+'">تحميل الصورة</a>'},'image/png')}
+// ---- actions
+async function runPhoto(st){const bm=await cutout(img,st);studio(bm,bgSel,$('#cv'));$('#cv').hidden=false;dlLink($('#cv'),$('#dl2'))}
+$('#go2').onclick=async()=>{
+ if(!img)return $('#s2').textContent='اختار صورة الأول';
+ if(!spend(5))return;$('#go2').disabled=true;
+ try{await runPhoto(t=>$('#s2').textContent=t);$('#s2').textContent='جاهزة.'}catch(e){refund(5);$('#s2').textContent='حصل خطأ: '+e.message+' (اتردت النقاط)'}
+ $('#go2').disabled=false};
+$('#go3').onclick=async()=>{
+ const n=$('#n3').value.trim();if(!n)return $('#s3').textContent='اكتب اسم المنتج';
+ if(!spend(1))return;$('#go3').disabled=true;$('#s3').textContent='بنكتب...';
+ try{render(await ads(n,$('#f3').value,$('#pr3').value,$('#p3 .dial').value),$('#o3'));$('#s3').textContent='جاهز.'}catch(e){refund(1);$('#s3').textContent='حصل خطأ: '+e.message+' (اتردت النقطة)'}
+ $('#go3').disabled=false};
+$('#go1').onclick=async()=>{
+ const n=$('#n1').value.trim();if(!img)return $('#s1').textContent='اختار صورة الأول';if(!n)return $('#s1').textContent='اكتب اسم المنتج';
+ if(!spend(6))return;$('#go1').disabled=true;$('#o1').innerHTML='<canvas id="cv1" width="1080" height="1080"></canvas><div id="dl1"></div><div id="ad1"></div>';
+ try{
+  const [o,bm]=await Promise.all([ads(n,$('#f1').value,$('#pr1').value,$('#p1 .dial').value),cutout(img,t=>$('#s1').textContent=t)]);
+  studio(bm,bgSel,$('#cv1'));dlLink($('#cv1'),$('#dl1'));render(o,$('#ad1'));$('#s1').textContent='جاهز.';
+ }catch(e){refund(6);$('#s1').textContent='حصل خطأ: '+e.message+' (اتردت النقاط)'}
+ $('#go1').disabled=false};
+</script>
+</body></html>
