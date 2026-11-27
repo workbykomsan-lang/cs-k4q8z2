@@ -39,11 +39,23 @@ canvas{width:100%;max-width:540px;border-radius:12px;display:block;margin:12px a
 .bg{width:46px;height:46px;border-radius:10px;border:2px solid transparent;cursor:pointer}
 .bg.on{border-color:var(--ac)}
 .drop{border:2px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--mu);cursor:pointer}
+#accBtn{background:var(--card);border:1px solid var(--line);color:var(--tx);border-radius:99px;padding:4px 14px;font:inherit;font-size:14px;cursor:pointer}
+.hd{display:flex;gap:8px;align-items:center}
+.modal{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:20;padding:16px}
+.modal[hidden]{display:none}
+.mbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;width:100%;max-width:380px}
+.mbox h3{margin:0 0 8px}.mbox .x{float:left;background:none;border:0;color:var(--mu);font-size:22px;cursor:pointer}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:10px}
+.plan{border:1px solid var(--line);border-radius:14px;padding:14px;background:#0e1116}
+.plan.cur{border-color:var(--ac)}
+.plan h4{margin:0}.plan .pts{font-size:28px;font-weight:800;color:var(--ac)}
+.plan ul{padding:0 18px 0 0;margin:8px 0;color:var(--mu);font-size:13px}
+.plan button{width:100%;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--mu);font:inherit}
 footer{color:var(--mu);font-size:12px;text-align:center;padding:24px}
 </style>
 </head>
 <body>
-<header><div class="logo">كليك <b>ستوديو</b></div><div class="credits">رصيدك: <b id="cr">0</b> نقطة</div></header>
+<header><div class="logo">كليك <b>ستوديو</b></div><div class="hd"><div class="credits">رصيدك: <b id="cr">0</b> نقطة</div><button id="accBtn">دخول</button></div></header>
 <main>
 <h1>صوّر منتجك وانزل إعلانك في كليك</h1>
 <p class="sub">ارفع صورة من الموبايل واحنا نشيل الخلفية ونحطها في ستوديو، ونكتبلك الإعلانات بلهجة جمهورك. نسخة تجريبية مجانية.</p>
@@ -51,6 +63,7 @@ footer{color:var(--mu);font-size:12px;text-align:center;padding:24px}
 <button class="tab on" data-t="p1">كليك واحد<small>صورة + ٣ إعلانات + سكريبت · ٦ نقاط</small></button>
 <button class="tab" data-t="p2">استوديو الصور<small>٥ نقاط للصورة</small></button>
 <button class="tab" data-t="p3">مولد الإعلانات<small>١ نقطة للحملة</small></button>
+<button class="tab" data-t="p4">الباقات<small>رصيدك وخطط الاشتراك</small></button>
 </div>
 
 <section class="panel on" id="p1">
@@ -91,8 +104,26 @@ footer{color:var(--mu);font-size:12px;text-align:center;padding:24px}
 <div class="status" id="s3"></div>
 <div id="o3"></div>
 </section>
+<section class="panel" id="p4">
+<h3 style="margin:0">رصيدك وباقات الاشتراك</h3>
+<p class="sub" id="planNow"></p>
+<div class="plans" id="plans"></div>
+<p class="sub" style="margin-top:14px">تكلفة الخدمات: كليك واحد ٦ نقاط · صورة ستوديو ٥ نقاط · مجموعة ٦ صور بالذكاء ٦ نقاط · حملة إعلانات نقطة واحدة.</p>
+<p class="sub">الدفع والاشتراك المدفوع لسه مش متاحين. الأسعار هتتحدد قبل الإطلاق، وحاليًا الباقة المجانية بس شغالة.</p>
+</section>
 </main>
-<footer>نسخة تجريبية. الرصيد المعروض تجريبي ومحفوظ على جهازك فقط، ولا يوجد دفع.</footer>
+<div class="modal" id="acc" hidden><div class="mbox">
+<button class="x" id="accX">×</button>
+<h3 id="accT">تسجيل الدخول</h3>
+<div id="accOut" hidden><p id="accMail" class="sub"></p><p class="sub" id="accCr"></p><button class="go" id="logout" style="background:#262c38;color:var(--tx)">تسجيل خروج</button></div>
+<form id="accIn">
+<label>البريد الإلكتروني</label><input id="ae" type="email" autocomplete="email" required>
+<label>كلمة السر (٦ أحرف على الأقل)</label><input id="ap" type="password" autocomplete="current-password" minlength="6" required>
+<button class="go" id="aok" type="submit">دخول</button>
+<button class="sm" type="button" id="aswitch" style="margin-top:10px;width:100%">معندكش حساب؟ سجّل حساب جديد (٣٠ نقطة هدية)</button>
+<div class="status" id="aerr"></div>
+</form></div></div>
+<footer>نسخة تجريبية. الحسابات والرصيد محفوظين على السيرفر. لا يوجد دفع حاليًا.</footer>
 <input type="file" id="file" accept="image/*" hidden>
 
 <script type="module">
@@ -101,10 +132,45 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const API='https://cs-api-k4q8.workbykomsan.workers.dev';
 let OWNER=false,OK=null;
 try{const m=location.hash.match(/o=([\w-]+)/);if(m){localStorage.setItem('cs_owner',m[1]);history.replaceState(null,'',location.pathname+location.search)}OK=localStorage.getItem('cs_owner')}catch{}
-let credits=Number(localStorage.getItem('cs_credits')??30); const showCr=()=>{$('#cr').textContent=OWNER?'∞':credits;if(!OWNER)localStorage.setItem('cs_credits',credits)};showCr();
+let TOK=null,ME=null;try{TOK=localStorage.getItem('cs_tok')}catch{}
+let credits=Number(localStorage.getItem('cs_credits')??30);
+const post=(p,b)=>fetch(API+p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
+const showCr=()=>{$('#cr').textContent=OWNER?'∞':(ME?ME.credits:credits);if(!OWNER&&!ME)localStorage.setItem('cs_credits',credits);$('#accBtn').textContent=ME?ME.email.split('@')[0].slice(0,12):'دخول';drawPlans()};
+const PLANS=[['free','مجاني',30,['٣٠ نقطة هدية عند التسجيل','كل الخدمات']],['starter','ستارتر',200,['٢٠٠ نقطة شهريًا','مناسب للمتجر الصغير']],['pro','برو',800,['٨٠٠ نقطة شهريًا','أولوية في المعالجة']],['biz','بزنس',2500,['٢٥٠٠ نقطة شهريًا','للوكالات والمتاجر الكبيرة']]];
+function drawPlans(){const cur=OWNER?'owner':(ME?ME.plan:'guest');$('#planNow').textContent=OWNER?'حساب المالك: رصيد غير محدود.':ME?'رصيدك الحالي: '+ME.credits+' نقطة · الباقة: '+(PLANS.find(p=>p[0]===ME.plan)||PLANS[0])[1]:'سجّل دخولك علشان رصيدك يتحفظ على حسابك وتاخد ٣٠ نقطة.';
+ $('#plans').innerHTML=PLANS.map(p=>'<div class="plan'+(p[0]===cur||(p[0]==='free'&&cur==='guest')?' cur':'')+'"><h4>'+p[1]+'</h4><div class="pts">'+p[2]+'</div><div class="sub" style="margin:0">نقطة</div><ul>'+p[3].map(x=>'<li>'+x+'</li>').join('')+'</ul><button disabled>'+(p[0]==='free'?(ME?'باقتك الحالية':'سجّل دخول'):'قريبًا')+'</button></div>').join('')}
+function logout(){TOK=null;ME=null;try{localStorage.removeItem('cs_tok')}catch{}showCr()}
+async function loadMe(){if(!TOK)return;try{const r=await post('/me',{t:TOK});if(r.status===401)return logout();const j=await r.json();ME=j;showCr()}catch{}}
+showCr();loadMe();
 if(OK)fetch(API+'/whoami',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:OK})}).then(r=>r.json()).then(j=>{if(j.owner){OWNER=true;showCr()}else localStorage.removeItem('cs_owner')}).catch(()=>{});
-const spend=n=>{if(OWNER)return true;if(credits<n){alert('رصيدك مش كفاية. النسخة التجريبية بتديك ٣٠ نقطة.');return false}credits-=n;showCr();return true};
-const refund=n=>{if(OWNER)return;credits+=n;showCr()};
+const need=n=>alert('رصيدك مش كفاية. محتاج '+n+' نقطة.');
+async function spend(n,srv=0){
+ if(OWNER)return true;
+ if(TOK&&ME){const o=n-srv;
+  if(ME.credits<n){need(n);return false}
+  if(o>0){try{const r=await post('/spend',{t:TOK,n:o});const j=await r.json();
+   if(r.status===401){logout();alert('انتهت الجلسة. سجّل دخولك تاني.');return false}
+   if(r.status===402){ME.credits=j.credits;showCr();need(n);return false}
+   if(!r.ok)throw 0;ME.credits=j.credits;showCr()}catch(e){alert('مشكلة في الاتصال. جرّب تاني.');return false}}
+  return true}
+ if(credits<n){alert('رصيدك مش كفاية. سجّل حساب علشان تاخد ٣٠ نقطة وتحفظ رصيدك.');return false}
+ credits-=n;showCr();return true}
+async function refund(n,srv=0){
+ if(OWNER)return;
+ if(TOK&&ME){if(n-srv>0){try{const r=await post('/refund',{t:TOK});ME.credits=(await r.json()).credits;showCr()}catch{}}else loadMe();return}
+ credits+=n;showCr()}
+// ---- account modal
+let mode='in';const acc=$('#acc');
+const setMode=m=>{mode=m;$('#accT').textContent=m==='in'?'تسجيل الدخول':'حساب جديد';$('#aok').textContent=m==='in'?'دخول':'إنشاء الحساب';$('#aswitch').textContent=m==='in'?'معندكش حساب؟ سجّل حساب جديد (٣٠ نقطة هدية)':'عندك حساب؟ سجّل دخول';$('#ap').autocomplete=m==='in'?'current-password':'new-password';$('#aerr').textContent=''};
+$('#accBtn').onclick=()=>{const l=!!(ME||OWNER);$('#accIn').hidden=l;$('#accOut').hidden=!l;if(l){$('#accT').textContent='حسابي';$('#accMail').textContent=OWNER?'حساب المالك (رصيد غير محدود)':ME.email;$('#accCr').textContent=OWNER?'':'الرصيد: '+ME.credits+' نقطة';$('#logout').hidden=!ME}else setMode('in');acc.hidden=false};
+$('#accX').onclick=()=>acc.hidden=true;acc.onclick=e=>{if(e.target===acc)acc.hidden=true};
+$('#aswitch').onclick=()=>setMode(mode==='in'?'up':'in');
+$('#logout').onclick=()=>{logout();acc.hidden=true};
+$('#accIn').onsubmit=async e=>{e.preventDefault();const b=$('#aok');b.disabled=true;$('#aerr').textContent='لحظة...';
+ try{const r=await post(mode==='in'?'/login':'/signup',{e:$('#ae').value.trim(),p:$('#ap').value});const j=await r.json();
+  if(!r.ok){$('#aerr').textContent=({creds:'البريد أو كلمة السر غلط.',exists:'البريد ده متسجل قبل كده. جرّب تسجيل الدخول.',limit:'محاولات كتير. جرّب بعدين.',bad:'اكتب بريد صحيح وكلمة سر ٦ أحرف على الأقل.'})[j.error]||'حصل خطأ. جرّب تاني.';return}
+  TOK=j.token;ME={email:j.email,credits:j.credits,plan:j.plan};try{localStorage.setItem('cs_tok',TOK)}catch{}$('#ap').value='';showCr();acc.hidden=true;
+ }catch{$('#aerr').textContent='مشكلة في الاتصال. جرّب تاني.'}finally{b.disabled=false}};
 // ---- tabs
 $$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');$$('.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.t))});
 // ---- file pick
@@ -133,11 +199,11 @@ eg:'اكتب بالعامية المصرية الطبيعية زي ما التا
 sa:'اكتب باللهجة السعودية (النجدية/الحجازية الخفيفة) زي إعلانات سناب وتويتر (مثال: "وش تنتظر"، "لا يفوتك"، "الحين"، "يجنن"). ممنوع الفصحى الثقيلة.',
 ae:'اكتب باللهجة الإماراتية الخليجية (مثال: "شو تنتظر"، "الحين"، "حلو مرة"، "لا يفوتكم"). ممنوع الفصحى الثقيلة.'};
 async function adsAI(name,feat,price,d){
- const r=await fetch(API+'/ad',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,features:feat,price,dialect:d,k:OWNER?OK:undefined})});
- if(!r.ok)throw new Error('ai '+r.status);const o=await r.json();if(!o.ads||!o.ads.length)throw new Error('shape');return o;
+ const r=await fetch(API+'/ad',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,features:feat,price,dialect:d,k:OWNER?OK:undefined,t:ME?TOK:undefined})});
+ if(r.status===402){if(ME)loadMe();{const e=new Error('رصيدك خلص. اشحن أو انتظر الباقات.');e.cr=1;throw e}}if(!r.ok)throw new Error('ai '+r.status);const o=await r.json();if(ME&&o.credits!=null){ME.credits=o.credits;showCr()}if(!o.ads||!o.ads.length)throw new Error('shape');return o;
 }
 async function ads(name,feat,price,d){
- try{return await adsAI(name,feat,price,d)}catch(e){console.warn('Gemini unavailable, using fallback',e)}
+ try{return await adsAI(name,feat,price,d)}catch(e){if(e.cr)throw e;console.warn('Gemini unavailable, using fallback',e)}
  return await adsFallback(name,feat,price,d);
 }
 async function adsFallback(name,feat,price,d){
@@ -187,7 +253,7 @@ function dlLink(cv,el){cv.toBlob(bl=>{const u=URL.createObjectURL(bl);el.innerHT
 async function runPhoto(st){const bm=await cutout(img,st);studio(bm,bgSel,$('#cv'));$('#cv').hidden=false;dlLink($('#cv'),$('#dl2'))}
 $('#go2').onclick=async()=>{
  if(!img)return $('#s2').textContent='اختار صورة الأول';
- if(!spend(5))return;$('#go2').disabled=true;
+ if(!await spend(5))return;$('#go2').disabled=true;
  try{await runPhoto(t=>$('#s2').textContent=t);$('#s2').textContent='جاهزة.'}catch(e){refund(5);$('#s2').textContent='حصل خطأ: '+errMsg(e)+' (اتردت النقاط)'}
  $('#go2').disabled=false};
 // ---- AI variant set (free: keyless Pollinations backgrounds + canvas compositing keeps the product intact)
@@ -202,9 +268,9 @@ const LAY=[{x:.5,s:.62,r:0},{x:.42,s:.7,r:-.05},{x:.5,s:.66,r:0},{x:.58,s:.72,r:
 const loadImg=u=>new Promise((ok,no)=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>ok(i);i.onerror=()=>no(new Error('bg'));i.src=u});
 async function sceneBg(i,seed){
  for(let t=0;t<2;t++){try{
-  const r=await fetch(API+'/bg',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({i,s:seed,k:OWNER?OK:undefined})});
-  if(r.status===429){BGLIM=true;return null}
-  const j=await r.json();if(!j.image)throw 0;
+  const r=await fetch(API+'/bg',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({i,s:seed,k:OWNER?OK:undefined,t:ME?TOK:undefined})});
+  if(r.status===429||r.status===402){BGLIM=true;return null}
+  const j=await r.json();if(!j.image)throw 0;if(ME&&j.credits!=null){ME.credits=j.credits;showCr()}
   return await loadImg('data:'+(j.mime||'image/jpeg')+';base64,'+j.image);
  }catch(e){await new Promise(r=>setTimeout(r,1500))}}
  return null;
@@ -258,8 +324,8 @@ $('#goSet').onclick=async()=>{
  if(!img)return $('#sSet').textContent='اختار صورة المنتج من فوق الأول';
  const T={n:$('#vn').value.trim()||'منتجك',h:$('#vh').value.trim(),p:$('#vp').value.trim()};
  const day=new Date().toISOString().slice(0,10),used=Number(localStorage.getItem('cs_set_'+day)||0);
- if(!OWNER&&used>=3)return $('#sSet').textContent='وصلت للحد اليومي (٣ مجموعات). جرّب بكرة.';
- if(!spend(6))return;$('#goSet').disabled=true;$('#grid').innerHTML='';$('#dlAll').innerHTML='';
+ if(!OWNER&&!ME&&used>=3)return $('#sSet').textContent='وصلت للحد اليومي (٣ مجموعات). جرّب بكرة.';
+ if(!await spend(6,6))return;$('#goSet').disabled=true;$('#grid').innerHTML='';$('#dlAll').innerHTML='';
  const out=[];
  try{
   await document.fonts.load('800 60px Cairo');
@@ -274,20 +340,20 @@ $('#goSet').onclick=async()=>{
   const files=[];for(let i=0;i<out.length;i++)files.push({name:'click-'+(i+1)+'.jpg',data:new Uint8Array(await out[i].arrayBuffer())});
   const z=URL.createObjectURL(makeZip(files));$('#dlAll').innerHTML='<a class="go" style="display:block;text-align:center;text-decoration:none;margin-top:10px" download="click-studio-set.zip" href="'+z+'">تحميل الكل (ZIP)</a>';
   localStorage.setItem('cs_set_'+day,used+1);st(BGLIM?'جاهزة. وصلت للحد اليومي للخلفيات بالذكاء فاستخدمنا خلفيات بسيطة لبعض الصور.':'جاهزة.');
- }catch(e){refund(6);$('#sSet').textContent='حصل خطأ: '+errMsg(e)+' (اتردت النقاط)'}
+ }catch(e){refund(6,6);$('#sSet').textContent='حصل خطأ: '+errMsg(e)+' (اتردت النقاط)'}
  $('#goSet').disabled=false};
 $('#go3').onclick=async()=>{
  const n=$('#n3').value.trim();if(!n)return $('#s3').textContent='اكتب اسم المنتج';
- if(!spend(1))return;$('#go3').disabled=true;$('#s3').textContent='بنكتب...';
- try{render(await ads(n,$('#f3').value,$('#pr3').value,$('#p3 .dial').value),$('#o3'));$('#s3').textContent='جاهز.'}catch(e){refund(1);$('#s3').textContent='حصل خطأ: '+errMsg(e)+' (اتردت النقطة)'}
+ if(!await spend(1,1))return;$('#go3').disabled=true;$('#s3').textContent='بنكتب...';
+ try{render(await ads(n,$('#f3').value,$('#pr3').value,$('#p3 .dial').value),$('#o3'));$('#s3').textContent='جاهز.'}catch(e){refund(1,1);$('#s3').textContent='حصل خطأ: '+errMsg(e)+' (اتردت النقطة)'}
  $('#go3').disabled=false};
 $('#go1').onclick=async()=>{
  const n=$('#n1').value.trim();if(!img)return $('#s1').textContent='اختار صورة الأول';if(!n)return $('#s1').textContent='اكتب اسم المنتج';
- if(!spend(6))return;$('#go1').disabled=true;$('#o1').innerHTML='<canvas id="cv1" width="1080" height="1080"></canvas><div id="dl1"></div><div id="ad1"></div>';
+ if(!await spend(6,1))return;$('#go1').disabled=true;$('#o1').innerHTML='<canvas id="cv1" width="1080" height="1080"></canvas><div id="dl1"></div><div id="ad1"></div>';
  try{
   const [o,bm]=await Promise.all([ads(n,$('#f1').value,$('#pr1').value,$('#p1 .dial').value),cutout(img,t=>$('#s1').textContent=t)]);
   studio(bm,bgSel,$('#cv1'));dlLink($('#cv1'),$('#dl1'));render(o,$('#ad1'));$('#s1').textContent='جاهز.';
- }catch(e){refund(6);$('#s1').textContent='حصل خطأ: '+errMsg(e)+' (اتردت النقاط)'}
+ }catch(e){refund(6,1);$('#s1').textContent='حصل خطأ: '+errMsg(e)+' (اتردت النقاط)'}
  $('#go1').disabled=false};
 </script>
 </body></html>
