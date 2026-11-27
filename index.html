@@ -201,10 +201,15 @@ const SCENES=[
 const LAY=[{x:.5,s:.62,r:0},{x:.42,s:.7,r:-.05},{x:.5,s:.66,r:0},{x:.58,s:.72,r:.05},{x:.5,s:.6,r:0},{x:.45,s:.68,r:-.03}];
 const loadImg=u=>new Promise((ok,no)=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>ok(i);i.onerror=()=>no(new Error('bg'));i.src=u});
 async function sceneBg(i,seed){
- const p=encodeURIComponent(SCENES[i][0]+', product photography backdrop, empty, no objects, no people, no text');
- for(let t=0;t<2;t++){try{return await loadImg('https://image.pollinations.ai/prompt/'+p+'?width=1024&height=1024&model=flux&nologo=true&seed='+(seed+i*7+t))}catch(e){await new Promise(r=>setTimeout(r,2500))}}
+ for(let t=0;t<2;t++){try{
+  const r=await fetch(API+'/bg',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({i,s:seed,k:OWNER?OK:undefined})});
+  if(r.status===429){BGLIM=true;return null}
+  const j=await r.json();if(!j.image)throw 0;
+  return await loadImg('data:'+(j.mime||'image/jpeg')+';base64,'+j.image);
+ }catch(e){await new Promise(r=>setTimeout(r,1500))}}
  return null;
 }
+let BGLIM=false;
 function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
 function fitText(c,t,max,size,wt){let s=size;do{c.font=wt+' '+s+'px Cairo,sans-serif';s-=2}while(c.measureText(t).width>max&&s>20);return c.measureText(t).width}
 function overlay(c,i,S,T){
@@ -259,7 +264,7 @@ $('#goSet').onclick=async()=>{
  try{
   await document.fonts.load('800 60px Cairo');
   const st=t=>$('#sSet').textContent=t;st('بنشيل الخلفية...');
-  const bm=await cutout(img,st);const seed=Math.floor(Math.random()*9999);
+  const bm=await cutout(img,st);const seed=Math.floor(Math.random()*9999);BGLIM=false;
   for(let i=0;i<6;i++){
    st('بنولّد الصورة '+(i+1)+' من ٦ بالذكاء...');
    const bg=await sceneBg(i,seed);const cv=variant(bm,bg,i,T);
@@ -268,7 +273,7 @@ $('#goSet').onclick=async()=>{
   }
   const files=[];for(let i=0;i<out.length;i++)files.push({name:'click-'+(i+1)+'.jpg',data:new Uint8Array(await out[i].arrayBuffer())});
   const z=URL.createObjectURL(makeZip(files));$('#dlAll').innerHTML='<a class="go" style="display:block;text-align:center;text-decoration:none;margin-top:10px" download="click-studio-set.zip" href="'+z+'">تحميل الكل (ZIP)</a>';
-  localStorage.setItem('cs_set_'+day,used+1);st('جاهزة.');
+  localStorage.setItem('cs_set_'+day,used+1);st(BGLIM?'جاهزة. وصلت للحد اليومي للخلفيات بالذكاء فاستخدمنا خلفيات بسيطة لبعض الصور.':'جاهزة.');
  }catch(e){refund(6);$('#sSet').textContent='حصل خطأ: '+errMsg(e)+' (اتردت النقاط)'}
  $('#goSet').disabled=false};
 $('#go3').onclick=async()=>{
