@@ -71,6 +71,15 @@ footer{color:var(--mu);font-size:12px;text-align:center;padding:24px}
 <div class="status" id="s2"></div>
 <canvas id="cv" width="1080" height="1080" hidden></canvas>
 <div id="dl2"></div>
+<hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+<label>مجموعة صور بالذكاء (٦ صور بخلفيات مولّدة + كلمات على الصورة)</label>
+<input id="vn" placeholder="اسم المنتج (يظهر على الصورة)" maxlength="40">
+<input id="vh" placeholder="جملة قصيرة (مثال: خصم لفترة محدودة)" maxlength="50" style="margin-top:8px">
+<input id="vp" placeholder="السعر (مثال: ٤٥٠ جنيه)" maxlength="20" style="margin-top:8px">
+<button class="go" id="goSet">ولّد ٦ صور بالذكاء (٦ نقاط)</button>
+<div class="status" id="sSet"></div>
+<div id="grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px"></div>
+<div id="dlAll"></div>
 </section>
 
 <section class="panel" id="p3">
@@ -181,6 +190,87 @@ $('#go2').onclick=async()=>{
  if(!spend(5))return;$('#go2').disabled=true;
  try{await runPhoto(t=>$('#s2').textContent=t);$('#s2').textContent='جاهزة.'}catch(e){refund(5);$('#s2').textContent='حصل خطأ: '+errMsg(e)+' (اتردت النقاط)'}
  $('#go2').disabled=false};
+// ---- AI variant set (free: keyless Pollinations backgrounds + canvas compositing keeps the product intact)
+const SCENES=[
+ ['clean white marble tabletop, soft window light, blurred bright cafe background','#1b1b1f'],
+ ['warm natural wooden table, cozy lifestyle interior, soft golden afternoon light, blurred background','#3b2412'],
+ ['dark black reflective surface, dramatic spotlight, luxury premium product backdrop, subtle smoke','#f5e7c8'],
+ ['pastel pink and peach seamless studio backdrop, soft diffused light, minimal podium','#7a2146'],
+ ['sunlit green garden terrace table, fresh bokeh foliage, bright summer morning','#0f3d26'],
+ ['modern minimal living room shelf, soft neutral tones, calm daylight, shallow depth of field','#222831']];
+const LAY=[{x:.5,s:.62,r:0},{x:.42,s:.7,r:-.05},{x:.5,s:.66,r:0},{x:.58,s:.72,r:.05},{x:.5,s:.6,r:0},{x:.45,s:.68,r:-.03}];
+const loadImg=u=>new Promise((ok,no)=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>ok(i);i.onerror=()=>no(new Error('bg'));i.src=u});
+async function sceneBg(i,seed){
+ const p=encodeURIComponent(SCENES[i][0]+', product photography backdrop, empty, no objects, no people, no text');
+ for(let t=0;t<2;t++){try{return await loadImg('https://image.pollinations.ai/prompt/'+p+'?width=1024&height=1024&model=flux&nologo=true&seed='+(seed+i*7+t))}catch(e){await new Promise(r=>setTimeout(r,2500))}}
+ return null;
+}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function fitText(c,t,max,size,wt){let s=size;do{c.font=wt+' '+s+'px Cairo,sans-serif';s-=2}while(c.measureText(t).width>max&&s>20);return c.measureText(t).width}
+function overlay(c,i,S,T){
+ const {n,h,p}=T;c.save();c.direction='rtl';c.textAlign='center';c.textBaseline='middle';const ac=['#ffb020','#ff7a59','#ffd166','#ff5d8f','#7bd88f','#6ec1ff'][i];
+ if(i%3===0){ // bottom banner
+  const g=c.createLinearGradient(0,S*.78,0,S);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.72)');c.fillStyle=g;c.fillRect(0,S*.74,S,S*.26);
+  c.fillStyle='#fff';fitText(c,n,S*.86,76,800);c.fillText(n,S/2,S*.87);
+  if(h){c.fillStyle=ac;fitText(c,h,S*.86,42,700);c.fillText(h,S/2,S*.94)}
+  if(p){const w=fitText(c,p,S*.4,52,800)+60;c.fillStyle=ac;rr(c,S-w-40,40,w,86,43);c.fill();c.fillStyle='#1a1a1a';c.fillText(p,S-w/2-40,84)}
+ }else if(i%3===1){ // top headline card
+  c.fillStyle='rgba(255,255,255,.88)';rr(c,60,50,S-120,h?200:140,34);c.fill();
+  c.fillStyle='#16161a';fitText(c,n,S-200,74,800);c.fillText(n,S/2,h?105:120);
+  if(h){c.fillStyle='#d6336c';fitText(c,h,S-200,40,700);c.fillText(h,S/2,190)}
+  if(p){const w=fitText(c,p,S*.5,60,800)+80;c.fillStyle='#16161a';rr(c,(S-w)/2,S-150,w,100,50);c.fill();c.fillStyle=ac;c.fillText(p,S/2,S-100)}
+ }else{ // badge + side text
+  if(p){c.fillStyle=ac;c.beginPath();c.arc(S-170,170,120,0,7);c.fill();c.fillStyle='#1a1a1a';fitText(c,p,200,50,800);c.fillText(p,S-170,170)}
+  c.fillStyle='rgba(0,0,0,.55)';rr(c,50,S-250,S-100,190,30);c.fill();
+  c.fillStyle='#fff';fitText(c,n,S-180,70,800);c.fillText(n,S/2,S-190);
+  if(h){c.fillStyle=ac;fitText(c,h,S-180,40,700);c.fillText(h,S/2,S-115)}
+ }
+ c.restore();
+}
+function variant(bm,bg,i,T){
+ const cv=document.createElement('canvas'),S=1080;cv.width=cv.height=S;const c=cv.getContext('2d');
+ if(bg){c.drawImage(bg,0,0,Math.min(bg.width,bg.height)*.93,Math.min(bg.width,bg.height)*.93,0,0,S,S)}
+ else{const [a,b]=BG[i][1];const g=c.createLinearGradient(0,0,S,S);g.addColorStop(0,a);g.addColorStop(1,b);c.fillStyle=g;c.fillRect(0,0,S,S)}
+ const L=LAY[i],sc=Math.min(S*L.s/bm.width,S*L.s/bm.height),w=bm.width*sc,h=bm.height*sc,cx=S*L.x,base=S*.74;
+ c.save();c.translate(cx,base);c.rotate(L.r);
+ c.fillStyle='rgba(0,0,0,.30)';c.filter='blur(16px)';c.beginPath();c.ellipse(0,6,w*.42,h*.045+8,0,0,7);c.fill();c.filter='none';
+ const P=document.createElement('canvas');P.width=Math.ceil(w);P.height=Math.ceil(h);const l=P.getContext('2d');
+ l.filter='contrast(1.05) saturate(1.05)';l.drawImage(bm,0,0,w,h);l.filter='none';l.globalCompositeOperation='source-atop';
+ const hi=l.createLinearGradient(0,0,w,h);hi.addColorStop(0,'rgba(255,255,255,.2)');hi.addColorStop(.55,'rgba(255,255,255,0)');hi.addColorStop(1,'rgba(0,0,0,.16)');l.fillStyle=hi;l.fillRect(0,0,w,h);
+ c.drawImage(P,-w/2,-h);c.restore();
+ overlay(c,i,S,T);return cv;
+}
+function crc32(u){let c,t=crc32.t||(crc32.t=Array.from({length:256},(_,n)=>{c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;return c>>>0}));let r=-1;for(let i=0;i<u.length;i++)r=t[(r^u[i])&255]^(r>>>8);return(r^-1)>>>0}
+function makeZip(files){const parts=[],cd=[];let off=0;const enc=new TextEncoder();
+ const w16=(a,v)=>a.push(v&255,v>>8&255),w32=(a,v)=>a.push(v&255,v>>8&255,v>>16&255,v>>24&255);
+ for(const f of files){const nm=enc.encode(f.name),cr=crc32(f.data),h=[];w32(h,0x04034b50);w16(h,20);w16(h,0);w16(h,0);w16(h,0);w16(h,0);w32(h,cr);w32(h,f.data.length);w32(h,f.data.length);w16(h,nm.length);w16(h,0);
+  parts.push(new Uint8Array(h),nm,f.data);
+  const d=[];w32(d,0x02014b50);w16(d,20);w16(d,20);w16(d,0);w16(d,0);w16(d,0);w16(d,0);w32(d,cr);w32(d,f.data.length);w32(d,f.data.length);w16(d,nm.length);w16(d,0);w16(d,0);w16(d,0);w16(d,0);w32(d,0);w32(d,off);cd.push(new Uint8Array(d),nm);
+  off+=h.length+nm.length+f.data.length}
+ let cs=0;cd.forEach(x=>cs+=x.length);const e=[];w32(e,0x06054b50);w16(e,0);w16(e,0);w16(e,files.length);w16(e,files.length);w32(e,cs);w32(e,off);w16(e,0);
+ return new Blob([...parts,...cd,new Uint8Array(e)],{type:'application/zip'})}
+$('#goSet').onclick=async()=>{
+ if(!img)return $('#sSet').textContent='اختار صورة المنتج من فوق الأول';
+ const T={n:$('#vn').value.trim()||'منتجك',h:$('#vh').value.trim(),p:$('#vp').value.trim()};
+ const day=new Date().toISOString().slice(0,10),used=Number(localStorage.getItem('cs_set_'+day)||0);
+ if(!OWNER&&used>=3)return $('#sSet').textContent='وصلت للحد اليومي (٣ مجموعات). جرّب بكرة.';
+ if(!spend(6))return;$('#goSet').disabled=true;$('#grid').innerHTML='';$('#dlAll').innerHTML='';
+ const out=[];
+ try{
+  await document.fonts.load('800 60px Cairo');
+  const st=t=>$('#sSet').textContent=t;st('بنشيل الخلفية...');
+  const bm=await cutout(img,st);const seed=Math.floor(Math.random()*9999);
+  for(let i=0;i<6;i++){
+   st('بنولّد الصورة '+(i+1)+' من ٦ بالذكاء...');
+   const bg=await sceneBg(i,seed);const cv=variant(bm,bg,i,T);
+   const bl=await new Promise(r=>cv.toBlob(r,'image/jpeg',.92));out.push(bl);
+   const u=URL.createObjectURL(bl);const d=document.createElement('div');d.innerHTML='<img src="'+u+'" style="width:100%;border-radius:12px;display:block"><a class="sm" download="click-'+(i+1)+'.jpg" href="'+u+'" style="display:block;text-align:center;margin-top:6px;text-decoration:none;padding:6px;border:1px solid var(--line);border-radius:8px;color:var(--tx)">تحميل</a>';$('#grid').appendChild(d);
+  }
+  const files=[];for(let i=0;i<out.length;i++)files.push({name:'click-'+(i+1)+'.jpg',data:new Uint8Array(await out[i].arrayBuffer())});
+  const z=URL.createObjectURL(makeZip(files));$('#dlAll').innerHTML='<a class="go" style="display:block;text-align:center;text-decoration:none;margin-top:10px" download="click-studio-set.zip" href="'+z+'">تحميل الكل (ZIP)</a>';
+  localStorage.setItem('cs_set_'+day,used+1);st('جاهزة.');
+ }catch(e){refund(6);$('#sSet').textContent='حصل خطأ: '+errMsg(e)+' (اتردت النقاط)'}
+ $('#goSet').disabled=false};
 $('#go3').onclick=async()=>{
  const n=$('#n3').value.trim();if(!n)return $('#s3').textContent='اكتب اسم المنتج';
  if(!spend(1))return;$('#go3').disabled=true;$('#s3').textContent='بنكتب...';
